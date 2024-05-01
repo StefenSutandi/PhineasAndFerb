@@ -1,4 +1,3 @@
-# F01 - Register
 import csv
 
 class Agent:
@@ -14,37 +13,43 @@ class Monster:
         self.name = name
         self.description = description
 
+def is_valid_username(username):
+    valid_characters = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-')
+    return all(char in valid_characters for char in username)
+
 def load_monsters_from_file(filename):
     monsters = []
     with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip header row
+        reader = csv.DictReader(file, delimiter=';')
         for row in reader:
-            name, description = row
-            monsters.append(Monster(name, description))
+            # Buat deskripsi berdasarkan atribut-atribut yang tersedia
+            type_name = row['type']
+            atk_power = int(row['atk_power'])
+            def_power = int(row['def_power'])
+            hp = int(row['hp'])
+            
+            # Format deskripsi sesuai dengan atribut-atribut
+            description = f"Type: {type_name}, ATK: {atk_power}, DEF: {def_power}, HP: {hp}"
+            
+            # Buat objek Monster dan tambahkan ke list monsters
+            monster = Monster(type_name, description)
+            monsters.append(monster)
     return monsters
+
 
 def register_agent():
     # Load monsters from CSV file
-    monsters = load_monsters_from_file('monsters.csv')
-
-    # Check if user is already logged in
-    if current_user:
-        print("Register gagal!")
-        print(f"Anda telah login dengan username {current_user.username}, silahkan lakukan 'LOGOUT' sebelum melakukan register.")
-        return
+    monsters = load_monsters_from_file('monster.csv')
 
     # Get user input for username and password
     while True:
-        username = input("Masukkan username: ")
+        username = input("Masukan username: ")
         if not is_valid_username(username):
-            print("Username hanya boleh berisi alfabet, angka, underscore, dan strip!")
-        elif find_agent_by_username(username):
-            print("Username sudah terpakai, silahkan gunakan username lain!")
+            print("Username hanya boleh berisi huruf, angka, underscore (_), dan strip (-).")
         else:
             break
 
-    password = input("Masukkan password: ")
+    password = input("Masukan password: ")
 
     # Display available monsters for selection
     print("\nSilahkan pilih salah satu monster sebagai monster awalmu:")
@@ -66,15 +71,9 @@ def register_agent():
     # Create and register the new agent
     new_agent = Agent(username, password, selected_monster)
     agents.append(new_agent)
+
+    # Welcome message
     print(f"Selamat datang Agent {username}. Mari kita mengalahkan Dr. Asep Spakbor dengan {selected_monster.name}!")
-
-def is_valid_username(username):
-    # Check if username contains only allowed characters
-    return all(c.isalnum() or c == '_' or c == '-' for c in username)
-
-def find_agent_by_username(username):
-    # Check if username is already registered
-    return any(agent.username == username for agent in agents)
 
 # Main program
 agents = []
