@@ -1,4 +1,4 @@
-# F00 Random Number Generator
+# F00 - Random Number Generator
 
 class LCG:
     def __init__(self, seed, a, c, m):
