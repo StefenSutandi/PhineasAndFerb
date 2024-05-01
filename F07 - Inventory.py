@@ -1,4 +1,5 @@
 # F07 - Inventory
+
 import csv
 
 class InventoryManager:
